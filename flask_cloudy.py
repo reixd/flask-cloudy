@@ -134,6 +134,8 @@ class Storage(object):
                  provider=None,
                  key=None,
                  secret=None,
+                 host=None,
+                 port=None,
                  container=None,
                  allowed_extensions=None,
                  app=None,
@@ -160,6 +162,8 @@ class Storage(object):
                 "provider": provider,
                 "key": key,
                 "secret": secret,
+                "host": host,
+                "port": port,
                 "container": container,
                 "allowed_extensions": allowed_extensions,
                 "app": app
@@ -171,7 +175,9 @@ class Storage(object):
 
             kwparams = {
                 "key": key,
-                "secret": secret
+                "secret": secret,
+                "host": host,
+                "port": port,
             }
 
             if "local" in provider.lower():
@@ -229,6 +235,9 @@ class Storage(object):
         allowed_extensions = app.config.get("STORAGE_ALLOWED_EXTENSIONS", None)
         serve_files = app.config.get("STORAGE_SERVER", True)
         serve_files_url = app.config.get("STORAGE_SERVER_URL", "files")
+        host = app.config.get("STORAGE_HOST", None)
+        port = app.config.get("STORAGE_HOST_PORT", None)
+        
 
         self.config["serve_files"] = serve_files
         self.config["serve_files_url"] = serve_files_url
@@ -244,6 +253,8 @@ class Storage(object):
         self.__init__(provider=provider,
                       key=key,
                       secret=secret,
+                      host=host,
+                      port=port,
                       container=container,
                       allowed_extensions=allowed_extensions)
 
