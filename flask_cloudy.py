@@ -657,26 +657,16 @@ class Object(object):
             expires = (datetime.datetime.now()
                        + datetime.timedelta(seconds=timeout)).strftime("%s")
 
-            if 's3' in driver_name or 'google' in driver_name:
-
-                s2s = "GET\n\n\n{expires}\n/{object_name}"\
-                    .format(expires=expires, object_name=self.path)
-                h = hmac.new(self.driver.secret.encode('utf-8'), s2s.encode('utf-8'), hashlib.sha1)
-                s = base64.encodestring(h.digest()).strip()
-                _keyIdName = "AWSAccessKeyId" if "s3" in driver_name else "GoogleAccessId"
-                params = {
-                    _keyIdName: self.driver.key,
-                    "Expires": expires,
-                    "Signature": s
-                }
-                urlkv = urlencode(params)
-                return "%s?%s" % (self.secure_url, urlkv)
-
-            elif 'cloudfiles' in driver_name:
-                return self.driver.ex_get_object_temp_url(self._obj,
+            try:
+                if 'cloudfiles' in driver_name:
+                    return self.driver.ex_get_object_temp_url(self._obj,
                                                                method="GET",
                                                                timeout=expires)
-            else:
+                else:
+                    return self.driver.get_object_cdn_url(self._obj, ex_expiry=expires)
+            except NotImplementedError as e:
                 raise NotImplemented("This provider '%s' doesn't support or "
                                      "doesn't have a signed url "
                                      "implemented yet" % self.provider_name)
+            except Exception as e:
+                raise e
