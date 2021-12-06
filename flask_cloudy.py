@@ -136,6 +136,7 @@ class Storage(object):
                  secret=None,
                  host=None,
                  port=None,
+                 region=None,
                  container=None,
                  allowed_extensions=None,
                  app=None,
@@ -164,6 +165,7 @@ class Storage(object):
                 "secret": secret,
                 "host": host,
                 "port": port,
+                "region": region,
                 "container": container,
                 "allowed_extensions": allowed_extensions,
                 "app": app
@@ -178,6 +180,7 @@ class Storage(object):
                 "secret": secret,
                 "host": host,
                 "port": port,
+                "region": region
             }
 
             if "local" in provider.lower():
@@ -237,6 +240,7 @@ class Storage(object):
         serve_files_url = app.config.get("STORAGE_SERVER_URL", "files")
         host = app.config.get("STORAGE_HOST", None)
         port = app.config.get("STORAGE_HOST_PORT", None)
+        region = app.config.get("STORAGE_REGION", None)
         
 
         self.config["serve_files"] = serve_files
@@ -255,6 +259,7 @@ class Storage(object):
                       secret=secret,
                       host=host,
                       port=port,
+                      region=region,
                       container=container,
                       allowed_extensions=allowed_extensions)
 
