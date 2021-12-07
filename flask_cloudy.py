@@ -639,10 +639,10 @@ class Object(object):
                                   delete_on_failure=delete_on_failure)
         return obj_path if file else None
 
-    def download_url(self, timeout=60, name=None):
+    def download_url(self, timeout=2, name=None):
         """
         Trigger a browse download
-        :param timeout: int - Time in seconds to expire the download
+        :param timeout: int - Time in hours to expire the download
         :param name: str - for LOCAL only, to rename the file being downloaded
         :return: str
         """
@@ -653,17 +653,13 @@ class Object(object):
                            name=name,
                            _external=True)
         else:
-            driver_name = self.driver.name.lower()
-            expires = (datetime.datetime.now()
-                       + datetime.timedelta(seconds=timeout)).strftime("%s")
-
             try:
-                if 'cloudfiles' in driver_name:
+                if 'cloudfiles' in self.driver.name.lower():
                     return self.driver.ex_get_object_temp_url(self._obj,
                                                                method="GET",
-                                                               timeout=expires)
+                                                               timeout=timeout)
                 else:
-                    return self.driver.get_object_cdn_url(self._obj, ex_expiry=expires)
+                    return self.driver.get_object_cdn_url(self._obj, ex_expiry=timeout)
             except NotImplementedError as e:
                 raise NotImplemented("This provider '%s' doesn't support or "
                                      "doesn't have a signed url "
